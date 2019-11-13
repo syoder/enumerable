@@ -1,0 +1,21 @@
+package enumerable
+
+{{$types := .}}
+{{range $idx, $type1 := $types}}
+// Filter{{title $type1}}s returns a slice of {{$type1}} where `f` returns true
+func Filter{{title $type1}}s(in []{{$type1}}, f func({{$type1}}) bool) []{{$type1}} {
+	out := make([]{{$type1}}, 0, len(in))
+	for _, value := range in {
+		if f(value) {
+			out = append(out, value)
+		}
+	}
+	return out
+}
+
+{{end}}
+
+var filterFuncs = []interface{}{
+	{{range $idx, $type1 := $types}}Filter{{title $type1}}s,
+	{{end}}
+}

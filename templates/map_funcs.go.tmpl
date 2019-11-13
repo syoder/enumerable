@@ -1,0 +1,19 @@
+package enumerable
+
+{{$types := .}}
+{{range $idx, $type1 := $types}}{{range $idx2, $type2 := $types}}
+// Map{{title $type1}}To{{title $type2}} maps a slice of {{$type1}} to {{$type2}}
+func Map{{title $type1}}To{{title $type2}}(in []{{$type1}}, f func({{$type1}}) {{$type2}}) []{{$type2}} {
+	out := make([]{{$type2}}, len(in))
+	for i, value := range in {
+		out[i] = f(value)
+	}
+	return out
+}
+
+{{end}}{{end}}
+
+var mapFuncs = []interface{}{
+	{{range $idx, $type1 := $types}}{{range $idx2, $type2 := $types}}Map{{title $type1}}To{{title $type2}},
+	{{end}}{{end}}
+}

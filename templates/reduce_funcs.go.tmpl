@@ -1,0 +1,17 @@
+package enumerable
+
+{{$types := .}}
+{{range $idx, $type1 := $types}}{{range $idx2, $type2 := $types}}
+	// Reduce{{title $type1}}To{{title $type2}} reduces a slice of {{$type1}} to {{$type2}}
+	func Reduce{{title $type1}}To{{title $type2}}(in []{{$type1}}, memo {{$type2}}, f func({{$type2}}, {{$type1}}) {{$type2}}) {{$type2}} {
+		for _, value := range in {
+			memo = f(memo, value)
+		}
+		return memo
+	}
+{{end}}{{end}}
+
+var reduceFuncs = []interface{}{
+	{{range $idx, $type1 := $types}}{{range $idx2, $type2 := $types}}Reduce{{title $type1}}To{{title $type2}},
+	{{end}}{{end}}
+}
