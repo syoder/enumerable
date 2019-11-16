@@ -1,10 +1,8 @@
 package enumerable
 
 import (
-	"io/ioutil"
-	"path/filepath"
+	"math"
 	"reflect"
-	"regexp"
 	"testing"
 )
 
@@ -14,6 +12,11 @@ func expectEqual(t *testing.T, expected, actual interface{}) {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected `%#v` but got `%#v`", expected, actual)
 	}
+}
+
+func expectApproxEqual(t *testing.T, digits int, expected, actual float64) {
+	m := math.Pow10(digits)
+	expectEqual(t, math.Round(expected*m)/m, math.Round(actual*m)/m)
 }
 
 func TestMap(t *testing.T) {
@@ -54,6 +57,15 @@ func TestReduceToFloat64(t *testing.T) {
 		return memo + float64(item)
 	})
 	expectEqual(t, 14.0, sumLengths)
+}
+
+func TestSumAndAvg(t *testing.T) {
+	expectEqual(t, 18, New([]int{1, 4, 6, 7}).SumAsInt())
+	expectEqual(t, 18, New([]int8{1, 4, 6, 7}).SumAsInt())
+	expectEqual(t, 4.5, New([]int8{1, 4, 6, 7}).Avg())
+	expectEqual(t, 19.4, New([]float64{1.4, 4.3, 6.2, 7.5}).SumAsFloat64())
+	expectApproxEqual(t, 4, 19.2, New([]float32{1.41, 4.32, 6.22, 7.25}).SumAsFloat64())
+	expectApproxEqual(t, 4, 4.655, New([]float32{3.4, 4.2, 6.22, 4.8}).Avg())
 }
 
 func TestFirst(t *testing.T) {
@@ -143,17 +155,6 @@ func TestJoinAsString(t *testing.T) {
 	floats := []float64{1.237, 2.672}
 	joined := New(floats).JoinAsStringWithFormat("%.2f", ",")
 	expectEqual(t, "1.24,2.67", joined)
-
-	nonAlphabet := regexp.MustCompile("[^a-zA-Z]")
-	files, _ := filepath.Glob("*.go")
-	out := New(files).Map(func(file string) []string {
-		contents, err := ioutil.ReadFile(file)
-		if err != nil {
-			panic(err)
-		}
-		return nonAlphabet.Split(string(contents), -1)
-	}).Flatten().Uniq().Sort().JoinAsString(", ")
-	t.Error(out)
 }
 
 // ********* BENCHMARKS **********

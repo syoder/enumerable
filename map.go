@@ -58,9 +58,10 @@ func ToGenericSlice(in AnySlice) []AnyValue {
 func ConvertSlice(in AnySlice, outType AnySlice) AnySlice {
 	inVal := reflect.ValueOf(in)
 	count := inVal.Len()
+	outElemType := reflect.TypeOf(outType).Elem()
 	output := reflect.MakeSlice(reflect.TypeOf(outType), count, count)
 	for i := 0; i < count; i++ {
-		output.Index(i).Set(inVal.Index(i))
+		output.Index(i).Set(inVal.Index(i).Convert(outElemType))
 	}
 	return output.Interface()
 }

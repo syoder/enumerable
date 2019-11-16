@@ -63,6 +63,22 @@ func (e Enumerable) ReduceToFloat64(memo float64, f IterFunc) float64 {
 	return e.Reduce(memo, f).(float64)
 }
 
+// SumAsInt returns the sum of items in the slice as an int. It will panic
+// if the values are float values
+func (e Enumerable) SumAsInt() int {
+	return SumAsInt(e.Slice)
+}
+
+// SumAsFloat64 returns the sum of items in the slice as a float64 value
+func (e Enumerable) SumAsFloat64() float64 {
+	return SumAsFloat64(e.Slice)
+}
+
+// Avg returns the average value of items in the slice
+func (e Enumerable) Avg() float64 {
+	return Avg(e.Slice)
+}
+
 // First returns a new Enumerable containing only the first `n` elements
 func (e Enumerable) First(n int) Enumerable {
 	return New(First(e.Slice, n))
